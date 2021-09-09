@@ -80,8 +80,9 @@ class Game extends React.Component {
                 <div><Button color="primary" disabled={lever_three !== null} variant="contained" onClick={setLeverThree} >L3</Button></div>
             </div>
             <div>
-                <Button onClick={debug}>Debug</Button>
-                <Button onClick={reset}>Play Again : $2</Button>
+                <Button variant="outlined" className="m-3" color="primary" onClick={debug}>Debug</Button>
+                <Button variant="outlined" className="m-3" color="primary" onClick={reset}>Play Again : $2</Button>
+                <Button variant="outlined" className="m-3" color="primary" onClick={handleGameClose}>QUIT</Button>
             </div>
             </div>
       </Modal>
