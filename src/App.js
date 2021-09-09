@@ -85,11 +85,12 @@ class App extends React.Component {
       this.setState({
         balance : (this.state.balance - amount).toFixed(2)
       },cb);
-      const { db } = this.state;
-      db[this.state.user].balance = (this.state.balance - amount).toFixed(2);
-      db[this.state.user].history = [...this.state.history,history_item];
-      
-      this.setState({db})
+      if(this.state.user){
+        const { db } = this.state;
+        db[this.state.user].balance = (this.state.balance - amount).toFixed(2);
+        db[this.state.user].history = [...this.state.history,history_item]; 
+        this.setState({db})
+      }
     }
   
   }
@@ -97,10 +98,11 @@ class App extends React.Component {
     this.setState({
       balance : parseFloat(this.state.balance)+amount
     });
-    
-    const { db } = this.state;
-    db[this.state.user].balance = parseFloat(this.state.balance)+amount;
-    this.setState({db})
+    if(this.state.user){  
+      const { db } = this.state;
+      db[this.state.user].balance = parseFloat(this.state.balance)+amount;
+      this.setState({db})
+    }
   }
   Logout = () =>{
     this.setState({
