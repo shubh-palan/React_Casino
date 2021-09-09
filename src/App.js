@@ -10,8 +10,12 @@ class App extends React.Component {
     user:null,
     balance:9.99,
     game_open:false,
+    history:[], //{id,l1,l2,l3,date}
     symbols:[ "♠", '♥', '♦', '♣'],
-    jackpot:'♠'
+    jackpot:'♠',
+    db:{
+
+    }
   }
   componentDidMount(){
     const state = localStorage.getItem("state");
@@ -21,47 +25,90 @@ class App extends React.Component {
     localStorage.setItem("state",JSON.stringify(this.state));
   }
   render() { 
-    const {user,balance,isLoggedIn,game_open,symbols,jackpot}= this.state;
+    const {user,balance,isLoggedIn,game_open,symbols,jackpot,history}= this.state;
     const {handleGameClose,Login,Logout,handleGamePlay,decreaseBalance,increaseBalance} = this;
     return <div>
       <NavBar Login={Login} Logout={Logout} user={user} balance={balance} isLoggedIn={isLoggedIn} />
-      <Body handleGamePlay={handleGamePlay} />
+      <Body history={history} handleGamePlay={handleGamePlay} />
       <Game balance={balance} increaseBalance={increaseBalance}  decreaseBalance={decreaseBalance} jackpot={jackpot} symbols={symbols} gameOpen={game_open} handleGameClose={handleGameClose}/>
     </div>;
   }
   
-  Login = (user)=>{
-    console.log("Logging In");
+  Login = (email,username,password)=>{
+    const {db} = this.state;
+    if(db[username]){
+      if(db[username].password!==password){
+        alert("Wrong Password ");
+        return
+      }
+      //if existing user in local db
+      this.setState({
+        isLoggedIn:true,
+        user:username,
+        balance:db[username].balance,
+        history:db[username].history      
+      });
+    }else{
+      //create new user
+      db[username] = {
+        user:username,
+        balance:this.state.balance || 9.99,
+        history:this.state.history || [],
+        email,
+        password      
+      }
+    }
     this.setState({
       isLoggedIn:true,
-      user:user,      
+      user:username,
+      balance:db[username].balance,
+      history:db[username].history,  
+      db    
     });
   }
-  decreaseBalance = (amount,cb) =>{
-    console.log(this.state.balance,amount)
+  decreaseBalance = (amount,cb,{l1,l2,l3}) =>{
     if((this.state.balance-amount)<0){
-      console.log(this.state.balance,amount)
       alert("InSufficient Funds");
       this.setState({game_open:false});
       return
     }else{
+      const history_item = {
+        id:( this.state.history.length+1),
+        l1,l2,l3,
+        date: (new Date().toLocaleString())
+      };
+      
+      this.setState({
+        history:[...this.state.history,history_item],
+      });  
       console.log(this.state.balance,amount)
       this.setState({
         balance : (this.state.balance - amount).toFixed(2)
       },cb);
+      const { db } = this.state;
+      db[this.state.user].balance = (this.state.balance - amount).toFixed(2);
+      db[this.state.user].history = [...this.state.history,history_item];
+      
+      this.setState({db})
     }
+  
   }
   increaseBalance = (amount) =>{
-    console.log(this.state.balance,amount)
-    console.log((parseFloat(this.state.balance).toFixed(2) - parseFloat(amount).toFixed(2)));
     this.setState({
       balance : parseFloat(this.state.balance)+amount
     });
+    
+    const { db } = this.state;
+    db[this.state.user].balance = parseFloat(this.state.balance)+amount;
+    this.setState({db})
   }
   Logout = () =>{
     this.setState({
-      isLoggedIn:false
-    });  
+      isLoggedIn:false,
+      user:null,
+      balance:0,
+      history:[]
+    });
   }
   handleGameClose = () =>{
     this.setState({

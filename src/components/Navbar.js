@@ -4,7 +4,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import { Chip, Modal } from '@material-ui/core';
+import { Chip, Modal, TextField } from '@material-ui/core';
 // import IconButton from '@material-ui/core/IconButton';
 // import MenuIcon from '@material-ui/icons/Menu';
 
@@ -33,6 +33,8 @@ export default function ButtonAppBar({Login,isLoggedIn,Logout,user,balance}) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [username,setUsername] = React.useState('');
+  const [password,setPassword] = React.useState('');
+  const [email,setEmail] = React.useState('');
 
   const handleOpen = () => {
     setOpen(true);
@@ -40,15 +42,17 @@ export default function ButtonAppBar({Login,isLoggedIn,Logout,user,balance}) {
 
   const handleClose = () => {
     setOpen(false);
+    setUsername('')
+    setPassword('');
+    setEmail('');
   };
-console.log(user);
   return (
       
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            Logo
+            SP Casino
           </Typography>
           <Chip label={'$ '+balance} />
           {isLoggedIn?(<Button onClick={Logout} color="inherit">Logout</Button>):(<Button onClick={handleOpen} color="inherit">Login</Button>)}
@@ -64,10 +68,12 @@ console.log(user);
       >
             <div className="paper">
             <h2 id="simple-modal-title">Login</h2>
-            <p id="simple-modal-description">
-                <input onInput={(e)=>{setUsername(e.target.value)}} name="" value={username}/>
-                <Button onClick={()=>{Login(username); handleClose() }} >Submit</Button>
-            </p>
+            <div>
+              <TextField onInput={(e)=>{setUsername(e.target.value)}} value={username}  label="Username" /><br/><br/>
+              <TextField onInput={(e)=>{setEmail(e.target.value)}} value={email}  label="Email" /><br/><br/>
+              <TextField onInput={(e)=>{setPassword(e.target.value)}} value={password}  label="Password" type="password" /><br/><br/>
+              <br/> <Button onClick={()=>{Login(email,username,password); handleClose() }} >Submit</Button>
+            </div>
             </div>
       </Modal>
     </div>
