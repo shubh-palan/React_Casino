@@ -85,7 +85,7 @@ class App extends React.Component {
       this.setState({
         balance : (this.state.balance - amount).toFixed(2)
       },cb);
-      if(this.state.user){
+      if(this.state.user  != null){
         const { db } = this.state;
         db[this.state.user].balance = (this.state.balance - amount).toFixed(2);
         db[this.state.user].history = [...this.state.history,history_item]; 
@@ -98,7 +98,7 @@ class App extends React.Component {
     this.setState({
       balance : parseFloat(this.state.balance)+amount
     });
-    if(this.state.user){  
+    if(this.state.user != null){  
       const { db } = this.state;
       db[this.state.user].balance = parseFloat(this.state.balance)+amount;
       this.setState({db})
